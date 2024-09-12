@@ -1,9 +1,11 @@
-import { auth } from "../config/firebase";
+import { auth, db } from "../config/firebase";
 import {
   createUserWithEmailAndPassword,
+  onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut
 } from "firebase/auth";
+import {setDoc, doc} from "firebase/firestore";
 import { useState, useEffect } from "react";
 
 export const Auth = () =>
@@ -24,7 +26,13 @@ export const Auth = () =>
 
     const signUp = async () =>
     {
-        await createUserWithEmailAndPassword(auth, email, password).catch((err)=> {console.error(err)});
+        await createUserWithEmailAndPassword(auth, email, password)
+        .then(async () =>
+            {await setDoc(doc(db, `people/${auth.currentUser.uid}`), 
+                {buddy:"", first_name: "", last_name: ""}) }
+               )
+        .catch((err)=> {console.error(err)});
+        
         setUser(email)
     };
     
@@ -33,6 +41,7 @@ export const Auth = () =>
         await signOut(auth).catch((err) => console.error(err));
         setUser("");
     }
+    
     return (
     <div>
         <input placeholder="Email" onChange={(e) => setEmail(e.target.value)}/>
@@ -40,7 +49,7 @@ export const Auth = () =>
         <button onClick={signUp}>Sign Up</button>
         <button onClick={signIn}>Sign In</button>
         <button onClick={logOut}>Sign Out</button>
-        <h2>Current User: {user}</h2>
+        <h2>Current User: {auth.currentUser && auth.currentUser.email}</h2>
     </div>
     );
 }

@@ -2,26 +2,7 @@ import { useEffect, useState } from "react";
 import {db, auth} from "../config/firebase";
 import { doc, getCountFromServer, getDoc,setDoc , collection, updateDoc} from "firebase/firestore";
 
-const Comment = ({comments, postId}) => {
-    console.log(comments);
 
-    const [newComment, setNewComment] = useState("");
-
-    const submitComment = async () =>
-    {
-        await updateDoc(doc(db, `posts/${postId}`) , {"comments" : [...comments, newComment]}).catch((err) => console.error(err));
-    }
-
-    return (
-        <div>
-            <h2>Comment Section</h2>
-            {comments.map((element) => (<p>{element}</p>) )}
-            <input placeholder="Comment" onChange={(e) => setNewComment(e.target.value)}></input>
-            <button onClick={submitComment}>Submit Comment</button>
-            
-        </div>
-    )
-}
 
 export const Post = ({postId}) =>
 {
@@ -104,12 +85,14 @@ export const Post = ({postId}) =>
                         <p>{likesCount} Likes</p>
                         <button onClick={likePost}>Like</button>
                     </div>
+
+                    {post.comments && (
                     <div>
                         <h2>Comment Section</h2>
                         {post && post.comments.map((element) => (<p>{element}</p>) )}
                         <input placeholder="Comment" onChange={(e) => setNewComment(e.target.value)}></input>
                         <button onClick={submitComment}>Submit Comment</button>
-                    </div>
+                    </div>)}
                     
                 </div>}
             
